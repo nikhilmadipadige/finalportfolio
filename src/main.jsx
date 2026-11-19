@@ -162,6 +162,24 @@ function useSmoothMotion(path) {
           scrollTrigger: { trigger: element, start: 'top 88%', toggleActions: 'play none none reverse' },
         });
       });
+      gsap.utils.toArray('[data-horizontal]').forEach((section) => {
+        const track = section.querySelector('.reel-track');
+        if (!track) return;
+        if (window.innerWidth <= 780) return;
+        const distance = () => Math.max(0, track.scrollWidth - window.innerWidth + 72);
+        gsap.to(track, {
+          x: () => -distance(),
+          ease: 'none',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top top',
+            end: () => `+=${distance()}`,
+            pin: true,
+            scrub: 1.05,
+            invalidateOnRefresh: true,
+          },
+        });
+      });
     });
     return () => ctx.revert();
   }, [path]);
@@ -365,7 +383,7 @@ function ProjectCard({ project, navigate, featured = false }) {
 }
 
 function ShieldArt() {
-  return <div className="shield-art"><div className="shield-rings"><span /><span /><span /></div><div className="shield-core"><ShieldCheck size={28} /><span>SAFE<br />MOVE</span></div><div className="signal-pill signal-top">THREAT TRACE <b>ACTIVE</b></div><div className="signal-pill signal-bottom">HUMAN SIGNAL <b>READ</b></div></div>;
+  return <div className="shield-art"><img className="shield-live-image" src="/assets/shieldsense-preview.webp" alt="ShieldSense threat detection interface" /><div className="shield-rings"><span /><span /><span /></div><div className="shield-core"><ShieldCheck size={28} /><span>SAFE<br />MOVE</span></div><div className="signal-pill signal-top">THREAT TRACE <b>ACTIVE</b></div><div className="signal-pill signal-bottom">HUMAN SIGNAL <b>READ</b></div></div>;
 }
 function VoiceArt() {
   return <div className="voice-art"><div className="voice-wave"><i /><i /><i /><i /><i /><i /><i /><i /><i /></div><div className="voice-command">“LISTEN / THINK / RESPOND”</div><div className="voice-orb"><Sparkles size={22} /></div></div>;
@@ -409,12 +427,47 @@ function ConversionBand({ navigate }) {
   );
 }
 
+function ReelPanel({ project, navigate }) {
+  return <Link to={project.href} onClick={navigate} className={`reel-panel reel-${project.accent}`}>
+    <div className="reel-panel-art">{project.slug === 'shieldsense' ? <ShieldArt /> : project.slug === 'voice-assistant' ? <VoiceArt /> : project.slug === 'facial-expression' ? <FaceArt /> : project.slug === 'supernatural' ? <ScrollyArt /> : <UnrealArt />}</div>
+    <div className="reel-panel-overlay" />
+    <div className="reel-panel-meta"><span>{project.number} / {project.type}</span><ArrowUpRight size={18} /></div>
+    <div className="reel-panel-copy"><h3>{project.title}</h3><p>{project.summary}</p><div className="tag-list">{project.tags.slice(0, 3).map(tag => <span key={tag}>{tag}</span>)}</div></div>
+    <span className="reel-panel-index">SCROLL / VIEW BUILD</span>
+  </Link>;
+}
+
+function CinemaHome({ navigate }) {
+  return <main className="cinema-home">
+    <section className="cinema-hero page-pad">
+      <div className="cinema-hero-copy" data-reveal><span className="cinema-overline">NIKHIL MADIPADIGE / 2026</span><h1>Ideas become<br /><em>real things.</em></h1><p>I build AI agents, security tools, and interactive experiences that make complex technology easier to understand and use.</p><div className="hero-actions"><ButtonLink to="/work" navigate={navigate}>View the reel</ButtonLink><ButtonLink to="/contact" variant="ghost" navigate={navigate}>Work with me</ButtonLink></div></div>
+      <div className="cinema-portrait" data-reveal><img src={portrait} alt="Nikhil Madipadige performing with a guitar" /><div className="cinema-portrait-caption"><span>HYDERABAD / INDIA</span><strong>01</strong></div><div className="cinema-portrait-line" /></div>
+      <div className="cinema-scroll-cue"><span>SCROLL</span><i /></div>
+    </section>
+    <section className="reel-section" data-horizontal>
+      <div className="reel-intro page-pad"><div><span className="cinema-overline">SELECTED WORK / 05 BUILDS</span><h2>Make it work.<br /><em>Make it felt.</em></h2></div><p>Security, agents, computer vision, story, and real-time worlds — each project starts as a technical question and becomes something you can experience.</p></div>
+      <div className="reel-pin"><div className="reel-track">{projects.map(project => <ReelPanel key={project.slug} project={project} navigate={navigate} />)}</div></div>
+    </section>
+    <section className="studio-section page-pad"><div className="studio-heading"><span className="cinema-overline">WHAT I CAN HELP SHIP</span><h2>Useful systems.<br /><em>Good atmosphere.</em></h2></div><div className="studio-services"><div><span>01</span><strong>AI workflows</strong><p>Agents and automations that connect input, reasoning, and action.</p></div><div><span>02</span><strong>Security prototypes</strong><p>Threat-aware tools that help people make a safer next move.</p></div><div><span>03</span><strong>Interactive web</strong><p>Interfaces, stories, and experiences with a point of view.</p></div></div></section>
+    <ConversionBand navigate={navigate} />
+  </main>;
+}
+
 function Home({ navigate }) {
-  return <main><Hero navigate={navigate} /><SignalSection /><FeaturedWork navigate={navigate} /><ConversionBand navigate={navigate} /></main>;
+  return <CinemaHome navigate={navigate} />;
+}
+
+function GalleryRow({ project, navigate }) {
+  return <Link to={project.href} onClick={navigate} className={`gallery-row gallery-${project.accent}`}>
+    <div className="gallery-row-number">{project.number}</div>
+    <div className="gallery-row-copy"><span>{project.type}</span><h2>{project.title}</h2><p>{project.summary}</p><div className="tag-list">{project.tags.map(tag => <span key={tag}>{tag}</span>)}</div></div>
+    <div className="gallery-row-art">{project.slug === 'shieldsense' ? <ShieldArt /> : project.slug === 'voice-assistant' ? <VoiceArt /> : project.slug === 'facial-expression' ? <FaceArt /> : project.slug === 'supernatural' ? <ScrollyArt /> : <UnrealArt />}</div>
+    <ArrowUpRight className="gallery-row-arrow" size={22} />
+  </Link>;
 }
 
 function Work({ navigate }) {
-  return <main className="inner-page"><section className="page-hero page-pad"><Kicker icon={Terminal}>THE BUILD LOG</Kicker><h1>Projects with a reason<br /><em>to exist.</em></h1><p>Five builds across security, AI, computer vision, frontend, and real-time 3D. Each one started with a question and ended with something you can inspect.</p></section><section className="work-list page-pad"><ProjectCard project={projects[0]} navigate={navigate} featured />{projects.slice(1).map(project => <ProjectCard key={project.slug} project={project} navigate={navigate} />)}</section><ConversionBand navigate={navigate} /></main>;
+  return <main className="inner-page gallery-page"><section className="page-hero page-pad"><span className="cinema-overline">WORK / 05 BUILDS</span><h1>A body of work<br /><em>in motion.</em></h1><p>AI agents, security tools, computer vision, cinematic web, and real-time worlds. Explore the systems, experiments, and interfaces behind each project.</p></section><section className="gallery-list page-pad">{projects.map(project => <GalleryRow key={project.slug} project={project} navigate={navigate} />)}</section><ConversionBand navigate={navigate} /></main>;
 }
 
 function CaseStudyLayout({ project, children, navigate }) {
