@@ -26,14 +26,21 @@ function usePath() {
 }
 
 function Art({ project, compact = false }) {
+  const covers = {
+    shieldsense: '/manus-storage/async-images/Ak2gNtyfDlrLXwY5FpYmpH/image-1.webp',
+    'voice-assistant': '/manus-storage/async-images/Ak2gNtyfDlrLXwY5FpYmpH/image-2.webp',
+    'facial-expression': '/manus-storage/async-images/Ak2gNtyfDlrLXwY5FpYmpH/image-3.webp',
+    supernatural: '/manus-storage/async-images/Ak2gNtyfDlrLXwY5FpYmpH/image-4.webp',
+    unreal: '/manus-storage/async-images/Ak2gNtyfDlrLXwY5FpYmpH/image-5.webp',
+  };
   const art = {
-    shieldsense: <><img src="/assets/shieldsense-preview.webp" alt="ShieldSense interface" /><div className="art-scan" /><div className="art-orbit orbit-a" /><div className="art-orbit orbit-b" /><span className="art-stamp">THREAT / 02</span></>,
+    shieldsense: <><div className="art-scan" /><div className="art-orbit orbit-a" /><div className="art-orbit orbit-b" /><span className="art-stamp">THREAT / 02</span></>,
     'voice-assistant': <><div className="voice-orb" /><div className="voice-bars">{Array.from({ length: 13 }).map((_, i) => <i key={i} style={{ '--i': i }} />)}</div><span className="art-stamp">LISTEN / THINK / RESPOND</span></>,
     'facial-expression': <><div className="face-grid" /><div className="face-box" /><div className="face-scan" /><span className="face-label">EXPRESSION / HAPPY<br /><b>0.86 CONFIDENCE</b></span></>,
     supernatural: <><div className="scrolly-photo" /><div className="scrolly-word">STORY<br /><em>IN MOTION</em></div><span className="art-stamp">SCROLL / SEQUENCE</span></>,
     unreal: <><div className="unreal-sky" /><div className="unreal-sun" /><div className="unreal-ridge ridge-one" /><div className="unreal-ridge ridge-two" /><div className="unreal-floor" /><span className="art-stamp">LUMEN / 5.3</span></>,
   }[project.slug];
-  return <div className={`project-art art-${project.accent} ${compact ? 'is-compact' : ''}`}>{art}</div>;
+  return <div className={`project-art art-${project.accent} ${compact ? 'is-compact' : ''}`}><img className="generated-cover" src={covers[project.slug]} alt={`${project.title} visual`} />{art}</div>;
 }
 
 function SmartLink({ to, children, className = '', onClick, external = false }) {
@@ -84,7 +91,7 @@ function About({ navigate }) { return <main className="text-page"><div className
 
 function Contact() { return <main className="contact-heavy"><span className="eyebrow">CONTACT / OPEN CHANNEL</span><h1>Make something<br /><em>impossible to ignore.</em></h1><p>Have an AI workflow, security idea, or interactive experience that needs a first version? Send the signal.</p><SmartLink to={email} external className="contact-email">madipadige.nikhil4u@gmail.com <ArrowUpRight size={25} /></SmartLink><div className="contact-grid-heavy"><span>HYDERABAD / INDIA</span><span>AVAILABLE WORLDWIDE</span><span>RESPONSE / 24—48H</span></div></main>; }
 
-function CaseStudy({ project, navigate }) { return <main className={`case-heavy case-${project.accent}`}><section className="case-top"><span className="eyebrow">{project.number} / {project.kicker}</span><h1>{project.title}</h1><p>{project.summary}</p><div className="case-tags">{project.tags.map(tag => <span key={tag}>{tag}</span>)}</div></section><section className="case-art-wrap"><Art project={project} /></section><section className="case-copy-heavy"><div><span className="eyebrow">THE READ</span><h2>Make the signal<br /><em>understandable.</em></h2></div><div><p>{project.summary} The project turns a technical idea into a visible, inspectable experience with a clear next action.</p><p>This build is part of a wider practice: explore a system, give it a human surface, then keep pushing until the interface has a point of view.</p>{project.live && <SmartLink to={project.live} external className="heavy-button">OPEN LIVE / SOURCE <ArrowUpRight size={18} /></SmartLink>}</div></section><SmartLink to="/work" onClick={navigate} className="case-back"><ArrowUpRight size={18} /> BACK TO WORK</SmartLink></main>; }
+function CaseStudy({ project, navigate }) { return <main className={`case-heavy case-${project.accent}`}><section className="case-top"><span className="eyebrow">{project.number} / {project.kicker}</span><h1>{project.title}</h1><p>{project.summary}</p><div className="case-tags">{project.tags.map(tag => <span key={tag}>{tag}</span>)}</div></section><section className="case-art-wrap"><Art project={project} /></section><section className="case-proof"><div><span>ROLE</span><b>Builder / creative technologist</b></div><div><span>STACK</span><b>{project.tags.join(' · ')}</b></div><div><span>STATUS</span><b>{project.live ? 'Live concept / source available' : 'Environment study'}</b></div><div><span>OBJECT</span><b>{project.category} / {project.number}</b></div></section><section className="case-copy-heavy"><div><span className="eyebrow">THE READ</span><h2>Make the signal<br /><em>understandable.</em></h2></div><div><p>{project.summary} The project turns a technical idea into a visible, inspectable experience with a clear next action.</p><p>This build is part of a wider practice: explore a system, give it a human surface, then keep pushing until the interface has a point of view.</p>{project.live && <SmartLink to={project.live} external className="heavy-button">OPEN LIVE / SOURCE <ArrowUpRight size={18} /></SmartLink>}</div></section><SmartLink to="/work" onClick={navigate} className="case-back"><ArrowUpRight size={18} /> BACK TO WORK</SmartLink></main>; }
 
 function App() {
   const { path, navigate } = usePath(); const [menu, setMenu] = useState(false); const [open, setOpen] = useState(null);

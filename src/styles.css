@@ -16,3 +16,15 @@ main { margin-left:68px; padding-top:74px; }.eyebrow { color:var(--lime); font:4
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } }
 
 .project-modal { position: relative; }
+
+/* Generated project cover set: the visual evidence layer for the portfolio cards. */
+.project-art .generated-cover { position:absolute; z-index:0; inset:0; width:100%; height:100%; object-fit:cover; opacity:.82; filter:saturate(.82) contrast(1.12); mix-blend-mode:screen; }
+.project-art .art-scan,.project-art .art-orbit,.project-art .voice-orb,.project-art .voice-bars,.project-art .face-grid,.project-art .face-box,.project-art .face-scan,.project-art .face-label,.project-art .scrolly-photo,.project-art .scrolly-word,.project-art .unreal-sky,.project-art .unreal-sun,.project-art .unreal-ridge,.project-art .unreal-floor,.project-art .art-stamp { z-index:1; }
+.project-art .scrolly-photo { opacity:.35; mix-blend-mode:color-dodge; }
+.project-art .scrolly-word { text-shadow:0 3px 0 rgba(0,0,0,.5); }
+
+.work-page .page-intro { padding-top:96px; padding-bottom:58px; }.work-page .heavy-work { padding-top:72px; }
+
+.work-page .page-intro { display:flex; align-items:end; justify-content:space-between; gap:42px; padding-top:82px; padding-bottom:34px; }.work-page .page-intro h1 { font-size:clamp(4.5rem,8vw,9rem); }.work-page .page-intro p { margin:0 0 8px; max-width:300px; }.work-page .heavy-work { padding-top:48px; }
+.case-proof { display:grid; grid-template-columns:repeat(4,1fr); margin:0 7vw; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }.case-proof div { min-height:105px; padding:18px 17px; border-right:1px solid var(--line); }.case-proof div:last-child { border-right:0; }.case-proof span { display:block; color:var(--muted); font:400 9px var(--mono); letter-spacing:.12em; }.case-proof b { display:block; max-width:220px; margin-top:18px; color:var(--ink); font-size:13px; line-height:1.2; font-weight:500; }.case-proof div:first-child b { color:var(--lime); }
+@media (max-width:800px) { .work-page .page-intro { display:block; padding-top:75px; padding-bottom:24px; }.work-page .page-intro p { margin-top:28px; }.work-page .heavy-work { padding-top:50px; }.case-proof { grid-template-columns:repeat(2,1fr); margin:0 17px; }.case-proof div:nth-child(2) { border-right:0; }.case-proof div:nth-child(-n+2) { border-bottom:1px solid var(--line); }.case-proof b { font-size:11px; } }
