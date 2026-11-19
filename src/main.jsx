@@ -1,32 +1,8 @@
-import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from '@studio-freight/lenis';
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  CheckCircle2,
-  ChevronRight,
-  Download,
-  ExternalLink,
-  Github,
-  Linkedin,
-  MapPin,
-  Mail,
-  Menu,
-  Search,
-  Radar,
-  ScanFace,
-  ShieldCheck,
-  Sparkles,
-  Terminal,
-  Workflow,
-  X,
-} from 'lucide-react';
+import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform } from 'motion/react';
+import { ArrowDownRight, ArrowUpRight, Download, Github, Linkedin, Mail, MapPin, Menu, MoveUpRight, X } from 'lucide-react';
 import './styles.css';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const portrait = '/assets/nikhil-portrait.webp';
 const resume = '/assets/Nikhil-Madipadige-Resume.pdf';
@@ -35,532 +11,86 @@ const linkedin = 'https://www.linkedin.com/in/nikhil-madipadige/';
 const email = 'mailto:madipadige.nikhil4u@gmail.com';
 
 const projects = [
-  {
-    slug: 'shieldsense',
-    number: '01',
-    type: 'Flagship / Security agent',
-    title: 'ShieldSense',
-    summary: 'A threat-investigation assistant that reads technical signals and human manipulation cues together, then recommends the safest next move.',
-    tags: ['AI agent', 'Threat intelligence', 'URLhaus', 'ThreatFox'],
-    href: '/work/shieldsense',
-    live: 'https://shield-sense-mvp.vercel.app/',
-    accent: 'cyan',
-  },
-  {
-    slug: 'voice-assistant',
-    number: '02',
-    type: 'Python / Conversational systems',
-    title: 'SamurAI',
-    summary: 'A Flask-based voice-interactive assistant with a web interface and JSON command handling for assistant-style interactions.',
-    tags: ['Python', 'Flask', 'HTML', 'JSON'],
-    href: '/work/voice-assistant',
-    live: 'https://github.com/nikhilmadipadige/SamurAI',
-    accent: 'violet',
-  },
-  {
-    slug: 'facial-expression',
-    number: '03',
-    type: 'Computer vision / Streamlit',
-    title: 'Expression Lab',
-    summary: 'A real-time facial expression detection application with model switching, landmarks, confidence scores, and webcam analysis.',
-    tags: ['Python', 'Streamlit', 'FER', 'DeepFace'],
-    href: '/work/facial-expression',
-    live: 'https://github.com/nikhilmadipadige/facial-expression-',
-    accent: 'lime',
-  },
-  {
-    slug: 'supernatural',
-    number: '04',
-    type: 'Creative technology / Frontend',
-    title: 'Supernatural / Scrolly',
-    summary: 'A cinematic scrollytelling experience using GSAP, layered imagery, narrative pacing, and responsive visual composition.',
-    tags: ['HTML', 'CSS', 'JavaScript', 'GSAP'],
-    href: '/work/supernatural',
-    live: 'https://github.com/nikhilmadipadige/supernatural-scrollyweb',
-    accent: 'amber',
-  },
-  {
-    slug: 'unreal',
-    number: '05',
-    type: 'Real-time 3D / Environment design',
-    title: 'Star Wars / Unreal',
-    summary: 'A cinematic Unreal Engine 5 environment study exploring Lumen lighting, reflections, composition, and camera language.',
-    tags: ['Unreal Engine 5', 'Lumen', 'Cinematics'],
-    href: '/work/unreal',
-    live: null,
-    accent: 'blue',
-  },
-];
-
-const capabilities = [
-  ['AI agents', 'Designing assistants that can interpret context, call tools, and move work forward.'],
-  ['Security thinking', 'Treating permissions, secrets, data handling, and failure modes as part of the build.'],
-  ['Creative frontend', 'Turning technical ideas into clear, atmospheric interfaces people want to explore.'],
-  ['Rapid prototypes', 'Shipping focused MVPs with Python, Streamlit, Flask, n8n, and modern web tooling.'],
+  { slug: 'shieldsense', number: '01', title: 'ShieldSense', kicker: 'SECURITY / AI AGENT', category: 'Security', accent: 'red', summary: 'A threat-investigation assistant that reads technical signals and human manipulation cues together, then recommends the safest next move.', tags: ['AI agent', 'URLhaus', 'ThreatFox'], live: 'https://shield-sense-mvp.vercel.app/' },
+  { slug: 'voice-assistant', number: '02', title: 'SamurAI', kicker: 'PYTHON / CONVERSATIONAL', category: 'AI', accent: 'blue', summary: 'A Flask-based voice-interactive assistant with JSON command handling and a browser interface.', tags: ['Python', 'Flask', 'JSON'], live: 'https://github.com/nikhilmadipadige/SamurAI' },
+  { slug: 'facial-expression', number: '03', title: 'Expression Lab', kicker: 'COMPUTER VISION / STREAMLIT', category: 'AI', accent: 'lime', summary: 'A real-time facial expression detection application with model switching, landmarks, confidence scores, and webcam analysis.', tags: ['FER', 'DeepFace', 'Webcam'], live: 'https://github.com/nikhilmadipadige/facial-expression-' },
+  { slug: 'supernatural', number: '04', title: 'Supernatural / Scrolly', kicker: 'CREATIVE WEB / GSAP', category: 'Creative', accent: 'orange', summary: 'A cinematic scrollytelling experience built around narrative pacing, layered imagery, and responsive visual composition.', tags: ['GSAP', 'Story', 'Frontend'], live: 'https://github.com/nikhilmadipadige/supernatural-scrollyweb' },
+  { slug: 'unreal', number: '05', title: 'Star Wars / Unreal', kicker: 'REAL-TIME 3D / CINEMA', category: 'Worlds', accent: 'violet', summary: 'A cinematic Unreal Engine 5 environment study exploring Lumen lighting, reflections, composition, and camera language.', tags: ['UE5', 'Lumen', 'Cinematics'], live: null },
 ];
 
 function usePath() {
   const [path, setPath] = useState(window.location.pathname);
-  useEffect(() => {
-    const onPop = () => setPath(window.location.pathname);
-    window.addEventListener('popstate', onPop);
-    return () => window.removeEventListener('popstate', onPop);
-  }, []);
-  const navigate = (to) => {
-    if (!to || to.startsWith('http') || to.startsWith('mailto:') || to.startsWith('#')) return;
-    window.history.pushState({}, '', to);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  };
+  useEffect(() => { const onPop = () => setPath(window.location.pathname); window.addEventListener('popstate', onPop); return () => window.removeEventListener('popstate', onPop); }, []);
+  const navigate = (to) => { if (!to || to.startsWith('http') || to.startsWith('mailto:')) return; window.history.pushState({}, '', to); window.dispatchEvent(new PopStateEvent('popstate')); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   return { path, navigate };
 }
 
-function useSmoothMotion(path) {
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.15,
-      smoothWheel: true,
-      syncTouch: true,
-      touchMultiplier: 1.05,
-    });
-    let rafId;
-    const raf = (time) => {
-      lenis.raf(time);
-      ScrollTrigger.update();
-      rafId = requestAnimationFrame(raf);
-    };
-    rafId = requestAnimationFrame(raf);
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
-  }, []);
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    const ctx = gsap.context(() => {
-      gsap.fromTo('[data-reveal]', { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.85, stagger: 0.07, ease: 'power3.out' });
-      gsap.utils.toArray('[data-scroll-reveal]').forEach((element) => {
-        gsap.fromTo(element, { opacity: 0, y: 34 }, {
-          opacity: 1,
-          y: 0,
-          duration: 0.9,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: element, start: 'top 86%', toggleActions: 'play none none reverse' },
-        });
-      });
-      gsap.utils.toArray('[data-parallax]').forEach((element) => {
-        gsap.to(element, {
-          yPercent: -10,
-          ease: 'none',
-          scrollTrigger: { trigger: element, start: 'top bottom', end: 'bottom top', scrub: true },
-        });
-      });
-      gsap.utils.toArray('[data-line]').forEach((element) => {
-        gsap.fromTo(element, { scaleX: 0 }, {
-          scaleX: 1,
-          transformOrigin: 'left center',
-          duration: 1.1,
-          ease: 'power3.inOut',
-          scrollTrigger: { trigger: element, start: 'top 88%', toggleActions: 'play none none reverse' },
-        });
-      });
-      gsap.utils.toArray('[data-horizontal]').forEach((section) => {
-        const track = section.querySelector('.reel-track');
-        if (!track) return;
-        if (window.innerWidth <= 780) return;
-        const distance = () => Math.max(0, track.scrollWidth - window.innerWidth + 72);
-        gsap.to(track, {
-          x: () => -distance(),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top top',
-            end: () => `+=${distance()}`,
-            pin: true,
-            scrub: 1.05,
-            invalidateOnRefresh: true,
-          },
-        });
-      });
-    });
-    return () => ctx.revert();
-  }, [path]);
-}
-
-function Cursor() {
-  useEffect(() => {
-    const cursor = document.querySelector('.cursor');
-    if (!cursor) return undefined;
-    const move = (event) => {
-      cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
-    };
-    window.addEventListener('pointermove', move, { passive: true });
-    return () => window.removeEventListener('pointermove', move);
-  }, []);
-  return <div className="cursor" aria-hidden="true"><span /><i /></div>;
-}
-
-function Link({ to, children, className = '', external = false, onClick }) {
-  const isExternal = external || to?.startsWith('http') || to?.startsWith('mailto:') || to?.startsWith('#');
-  const props = isExternal
-    ? { href: to, ...(external && to?.startsWith('http') ? { target: '_blank', rel: 'noreferrer' } : {}) }
-    : { href: to, onClick: (event) => { event.preventDefault(); onClick?.(to); } };
-  return <a className={className} {...props}>{children}</a>;
-}
-
-function Header({ navigate }) {
-  const [open, setOpen] = useState(false);
-  const go = (to) => { setOpen(false); navigate(to); };
-  return (
-    <header className={`site-header portfolio-shell ${open ? 'is-open' : ''}`}>
-      <aside className="profile-rail">
-        <Link to="/" className="rail-brand" onClick={go}><span className="wordmark-mark">NM</span><span>nikhil<span className="rail-slash">/</span></span></Link>
-        <div className="rail-profile">
-          <div className="rail-avatar"><img src={portrait} alt="Nikhil Madipadige" /></div>
-          <span className="rail-status"><span className="pulse-dot" /> Open to work</span>
-          <h1>Nikhil<br />Madipadige</h1>
-          <p>Cybersecurity student<br />+ AI automation builder</p>
-          <span className="rail-location"><MapPin size={13} /> Hyderabad, India</span>
-        </div>
-        <div className="rail-actions"><a href={email} className="rail-contact"><Mail size={15} /> Contact me <ArrowUpRight size={14} /></a><div className="rail-socials"><a href={github} target="_blank" rel="noreferrer"><Github size={16} /></a><a href={linkedin} target="_blank" rel="noreferrer"><Linkedin size={16} /></a><a href={resume} target="_blank" rel="noreferrer"><Download size={16} /></a></div></div>
-        <nav className="rail-nav" aria-label="Portfolio navigation"><Link to="/about" onClick={go} className="rail-nav-link"><span>Profile</span><ArrowUpRight size={14} /></Link><Link to="/work" onClick={go} className="rail-nav-link is-active"><span>Portfolio</span><ArrowUpRight size={14} /></Link><Link to="/contact" onClick={go} className="rail-nav-link"><span>Hire me</span><ArrowUpRight size={14} /></Link></nav>
-        <span className="rail-footer">NM / 2026</span>
-      </aside>
-      <div className="app-topbar">
-        <Link to="/" className="mobile-brand" onClick={go}><span className="wordmark-mark">NM</span><strong>nikhil</strong></Link>
-        <div className="portfolio-search"><Search size={15} /><span>Search the portfolio</span><kbd>⌘ K</kbd></div>
-        <div className="topbar-right"><span className="topbar-count">05 projects</span><Link to="/contact" onClick={go} className="topbar-cta">Start a project <ArrowUpRight size={14} /></Link><button className="menu-toggle" type="button" aria-label="Toggle navigation" onClick={() => setOpen(!open)}>{open ? <X size={20} /> : <Menu size={20} />}</button></div>
-      </div>
-      <nav className="mobile-nav" aria-label="Mobile navigation"><Link to="/about" onClick={go}>Profile <ArrowUpRight size={16} /></Link><Link to="/work" onClick={go}>Portfolio <ArrowUpRight size={16} /></Link><Link to="/contact" onClick={go}>Contact <ArrowUpRight size={16} /></Link></nav>
-    </header>
-  );
-}
-
-function Footer({ navigate }) {
-  return (
-    <footer className="site-footer">
-      <div className="footer-top">
-        <div>
-          <div className="footer-wordmark">NIKHIL<span>.</span></div>
-          <p>AI agents. Security tools.<br />Interfaces with a pulse.</p>
-        </div>
-        <div className="footer-cta">
-          <span className="eyebrow">Have a hard problem?</span>
-          <Link to="/contact" className="footer-link" onClick={navigate}>Let’s build something useful <ArrowUpRight size={18} /></Link>
-        </div>
-      </div>
-      <div className="footer-bottom">
-        <span>Hyderabad, India / available worldwide</span>
-        <div className="footer-socials">
-          <a href={github} target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={14} /></a>
-          <a href={linkedin} target="_blank" rel="noreferrer">LinkedIn <ArrowUpRight size={14} /></a>
-          <a href={email}>Email <ArrowUpRight size={14} /></a>
-        </div>
-        <span>© {new Date().getFullYear()} NM Systems</span>
-      </div>
-    </footer>
-  );
-}
-
-function Kicker({ children, icon: Icon = Sparkles }) {
-  return <span className="kicker"><Icon size={14} /> {children}</span>;
-}
-
-function ButtonLink({ to, children, variant = 'primary', external = false, navigate }) {
-  return <Link to={to} external={external} onClick={navigate} className={`button button-${variant}`}>
-    {children} <ArrowUpRight size={16} />
-  </Link>;
-}
-
-function ArrowLink({ to, children, external = false, navigate }) {
-  return <Link to={to} external={external} onClick={navigate} className="arrow-link">{children}<ArrowUpRight size={15} /></Link>;
-}
-
-function Hero({ navigate }) {
-  return (
-    <section className="hero page-pad">
-      <div className="hero-grid">
-        <div className="hero-copy">
-          <div className="hero-meta" data-reveal>
-            <Kicker icon={Radar}>AI / SECURITY / CREATIVE TECH</Kicker>
-            <span className="hero-location">HYDERABAD, INDIA — 2026</span>
-          </div>
-          <h1 data-reveal>I build safer systems <em>with a creative edge.</em></h1>
-          <p className="hero-lede" data-reveal>
-            I’m Nikhil Madipadige — a cybersecurity student and AI automation builder creating agents, security tools, and interfaces that make complex technology easier to use.
-          </p>
-          <div className="hero-actions" data-reveal>
-            <ButtonLink to="/work" navigate={navigate}>Explore the work</ButtonLink>
-            <ButtonLink to="/contact" variant="ghost" navigate={navigate}>Start a project</ButtonLink>
-          </div>
-          <div className="hero-proof" data-reveal>
-            <span>Strong in n8n + AI agents</span>
-            <span className="proof-line" />
-            <span>Building at the edge of security</span>
-          </div>
-        </div>
-        <div className="hero-visual" data-reveal>
-          <div className="hero-orbit orbit-one" />
-          <div className="hero-orbit orbit-two" />
-          <div className="hero-portrait-wrap">
-            <img src={portrait} alt="Nikhil Madipadige performing with a guitar" />
-            <div className="portrait-glass"><span>BUILD / SHIP / LEARN</span><strong>01</strong></div>
-          </div>
-          <div className="hero-stamp"><span>NM</span><small>systems / studio</small></div>
-          <div className="hero-side-note">SCROLL TO TRACE<br /><span>THE SIGNAL</span></div>
-        </div>
-      </div>
-      <div className="hero-bottom" data-reveal>
-        <span className="scroll-label"><ArrowDownRight size={16} /> Scroll to explore</span>
-        <span className="hero-index">01 <i /> 05</span>
-      </div>
-    </section>
-  );
-}
-
-function SignalSection() {
-  return (
-    <section className="signal-section page-pad" data-scroll-reveal>
-      <div className="signal-intro">
-        <Kicker icon={Workflow}>THE OPERATING SYSTEM</Kicker>
-        <h2>From signal to <span>something useful.</span></h2>
-      </div>
-      <div className="signal-grid">
-        <div className="signal-copy">
-          <p className="large-copy">Good technology does more than detect a problem. It gives people enough context to make a better next move.</p>
-          <p>I work across AI agents, cybersecurity, computer vision, frontend systems, and real-time 3D. The common thread is simple: build the thing, make it understandable, and leave it safer than you found it.</p>
-        </div>
-        <WorkflowDiagram />
-      </div>
-    </section>
-  );
-}
-
-function WorkflowDiagram({ compact = false }) {
-  return (
-    <div className={`workflow ${compact ? 'workflow-compact' : ''}`}>
-      <div className="workflow-label">NIKHIL / FLOW 001</div>
-      <div className="workflow-track">
-        <div className="workflow-node"><span>01</span><strong>INPUT</strong><small>message / data</small></div>
-        <div className="workflow-connector"><i /></div>
-        <div className="workflow-node active"><span>02</span><strong>AGENT</strong><small>reason / inspect</small></div>
-        <div className="workflow-connector"><i /></div>
-        <div className="workflow-node"><span>03</span><strong>ACTION</strong><small>safe next move</small></div>
-      </div>
-      <div className="workflow-foot"><span><span className="live-dot" /> SYSTEM READY</span><span>LOW FRICTION / HIGH SIGNAL</span></div>
-    </div>
-  );
-}
-
-function ProjectCard({ project, navigate, featured = false }) {
-  return (
-    <article className={`project-card project-${project.accent} ${featured ? 'project-featured' : ''}`} data-scroll-reveal>
-      <div className="project-card-top">
-        <span className="project-number">{project.number} / {project.type}</span>
-        <span className="project-status"><span className="live-dot" /> BUILD LOG</span>
-      </div>
-      <div className="project-card-body">
-        <div className="project-art" aria-hidden="true">
-          {project.slug === 'shieldsense' ? <ShieldArt /> : null}
-          {project.slug === 'voice-assistant' ? <VoiceArt /> : null}
-          {project.slug === 'facial-expression' ? <FaceArt /> : null}
-          {project.slug === 'supernatural' ? <ScrollyArt /> : null}
-          {project.slug === 'unreal' ? <UnrealArt /> : null}
-        </div>
-        <div className="project-card-copy">
-          <h3>{project.title}</h3>
-          <p>{project.summary}</p>
-          <div className="tag-list">{project.tags.map(tag => <span key={tag}>{tag}</span>)}</div>
-          <div className="project-card-actions">
-            <ArrowLink to={project.href} navigate={navigate}>Read the build log</ArrowLink>
-            {project.live && <ArrowLink to={project.live} external>Live / source</ArrowLink>}
-          </div>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function ShieldArt() {
-  return <div className="shield-art"><img className="shield-live-image" src="/assets/shieldsense-preview.webp" alt="ShieldSense threat detection interface" /><div className="shield-rings"><span /><span /><span /></div><div className="shield-core"><ShieldCheck size={28} /><span>SAFE<br />MOVE</span></div><div className="signal-pill signal-top">THREAT TRACE <b>ACTIVE</b></div><div className="signal-pill signal-bottom">HUMAN SIGNAL <b>READ</b></div></div>;
-}
-function VoiceArt() {
-  return <div className="voice-art"><div className="voice-wave"><i /><i /><i /><i /><i /><i /><i /><i /><i /></div><div className="voice-command">“LISTEN / THINK / RESPOND”</div><div className="voice-orb"><Sparkles size={22} /></div></div>;
-}
-function FaceArt() {
-  return <div className="face-art"><div className="face-grid" /><div className="face-brackets"><span /><span /><span /><span /></div><div className="face-scanline" /><div className="face-readout">EXPRESSION / HAPPY<br /><b>0.86 CONFIDENCE</b></div></div>;
-}
-function ScrollyArt() {
-  return <div className="scrolly-art"><div className="scrolly-image" /><div className="scrolly-type">STORY<br /><em>IN MOTION</em></div><div className="scrolly-line" /></div>;
-}
-function UnrealArt() {
-  return <div className="unreal-art"><div className="unreal-sun" /><div className="unreal-grid" /><div className="unreal-mountains" /><span className="unreal-caption">LUMEN / 5.3</span></div>;
-}
-
-function FeaturedWork({ navigate }) {
-  return (
-    <section className="work-preview page-pad">
-      <div className="section-head" data-scroll-reveal>
-        <div><Kicker icon={Terminal}>SELECTED BUILDS</Kicker><h2>Work with a point of view.</h2></div>
-        <ArrowLink to="/work" navigate={navigate}>See all projects</ArrowLink>
-      </div>
-      <ProjectCard project={projects[0]} navigate={navigate} featured />
-      <div className="project-grid">
-        {projects.slice(1, 4).map(project => <ProjectCard key={project.slug} project={project} navigate={navigate} />)}
-      </div>
-      <div className="mini-build" data-scroll-reveal>
-        <div><span className="eyebrow">ALSO IN THE LAB</span><strong>n8n workflows / Linux / networking / R&amp;D</strong></div>
-        <span className="mini-build-note">The best work usually starts as a useful question.</span>
-      </div>
-    </section>
-  );
-}
-
-function ConversionBand({ navigate }) {
-  return (
-    <section className="conversion-band page-pad" data-scroll-reveal>
-      <div className="conversion-mark"><span>NM</span><i /></div>
-      <div className="conversion-copy"><Kicker icon={Sparkles}>FOR PEOPLE BUILDING WHAT’S NEXT</Kicker><h2>Have a messy problem?<br /><em>Good. Let’s make it legible.</em></h2></div>
-      <ButtonLink to="/contact" navigate={navigate}>Start a conversation</ButtonLink>
-    </section>
-  );
-}
-
-function ReelPanel({ project, navigate }) {
-  return <Link to={project.href} onClick={navigate} className={`reel-panel reel-${project.accent}`}>
-    <div className="reel-panel-art">{project.slug === 'shieldsense' ? <ShieldArt /> : project.slug === 'voice-assistant' ? <VoiceArt /> : project.slug === 'facial-expression' ? <FaceArt /> : project.slug === 'supernatural' ? <ScrollyArt /> : <UnrealArt />}</div>
-    <div className="reel-panel-overlay" />
-    <div className="reel-panel-meta"><span>{project.number} / {project.type}</span><ArrowUpRight size={18} /></div>
-    <div className="reel-panel-copy"><h3>{project.title}</h3><p>{project.summary}</p><div className="tag-list">{project.tags.slice(0, 3).map(tag => <span key={tag}>{tag}</span>)}</div></div>
-    <span className="reel-panel-index">SCROLL / VIEW BUILD</span>
-  </Link>;
-}
-
-function PortfolioTile({ project, navigate, featured = false }) {
-  return <Link to={project.href} onClick={navigate} className={`portfolio-tile tile-${project.accent} ${featured ? 'is-featured' : ''}`}>
-    <div className="tile-visual">{project.slug === 'shieldsense' ? <ShieldArt /> : project.slug === 'voice-assistant' ? <VoiceArt /> : project.slug === 'facial-expression' ? <FaceArt /> : project.slug === 'supernatural' ? <ScrollyArt /> : <UnrealArt />}</div>
-    <div className="tile-wash" />
-    <div className="tile-top"><span>{project.number} / {project.type}</span><ArrowUpRight size={17} /></div>
-    <div className="tile-bottom"><h3>{project.title}</h3><p>{project.summary}</p><div className="tag-list">{project.tags.slice(0, 3).map(tag => <span key={tag}>{tag}</span>)}</div></div>
-  </Link>;
-}
-
-function PortfolioDashboard({ navigate }) {
-  const [filter, setFilter] = useState('All');
-  const categories = ['All', 'AI + Security', 'Creative web', 'Computer vision', '3D'];
-  const categoryMap = { shieldsense: 'AI + Security', 'voice-assistant': 'AI + Security', 'facial-expression': 'Computer vision', supernatural: 'Creative web', unreal: '3D' };
-  const visibleProjects = filter === 'All' ? projects : projects.filter(project => categoryMap[project.slug] === filter);
-  return <main className="portfolio-dashboard">
-    <section className="dashboard-welcome page-pad"><div className="dashboard-welcome-copy"><span className="dashboard-label">PORTFOLIO / PROFILE</span><h1>Hi, I’m <em>Nikhil.</em></h1><p>I build AI agents, security tools, and interactive digital experiences. I’m interested in the space where a technical system becomes something people can actually use.</p><div className="dashboard-actions"><ButtonLink to="/work" navigate={navigate}>Browse all work</ButtonLink><ButtonLink to="/about" navigate={navigate} variant="ghost">View profile</ButtonLink></div></div><div className="dashboard-status"><span className="dashboard-status-top"><span className="pulse-dot" /> OPEN TO WORK</span><strong>Available for freelance projects, internships, and collaborations.</strong><span className="dashboard-status-meta">Updated / Nov 2026</span></div></section>
-    <section className="dashboard-feature page-pad"><div className="dashboard-section-head"><div><span className="dashboard-label">FEATURED PROJECT / 01</span><h2>Start with<br /><em>ShieldSense.</em></h2></div><Link to="/work/shieldsense" onClick={navigate} className="dashboard-more">Open case study <ArrowUpRight size={16} /></Link></div><Link to="/work/shieldsense" onClick={navigate} className="feature-project"><div className="feature-project-visual"><ShieldArt /></div><div className="feature-project-info"><span className="feature-kicker">AI THREAT INVESTIGATION ASSISTANT</span><h3>Reading the signal<br /><em>behind the message.</em></h3><p>ShieldSense reads technical threat signals and human manipulation signals together, then makes the safest next move easier to see.</p><div className="feature-project-meta"><span>URLhaus</span><span>ThreatFox</span><span>AI agent</span><span>Decision support</span></div><span className="feature-open">View project <ArrowUpRight size={16} /></span></div></Link></section>
-    <section className="dashboard-work page-pad"><div className="dashboard-section-head"><div><span className="dashboard-label">PORTFOLIO / 05 PROJECTS</span><h2>More things<br /><em>I’ve built.</em></h2></div><span className="dashboard-section-note">Filter by the kind of problem you want to solve.</span></div><div className="project-filters">{categories.map(category => <button type="button" key={category} className={filter === category ? 'is-selected' : ''} onClick={() => setFilter(category)}>{category}</button>)}</div><div className="portfolio-grid">{visibleProjects.map((project, index) => <PortfolioTile key={project.slug} project={project} navigate={navigate} featured={index === 0 && filter !== 'All'} />)}</div></section>
-    <section className="dashboard-bottom page-pad"><div><span className="dashboard-label">CURRENTLY</span><strong>Building with n8n, Python, Flask, Streamlit, GSAP, and Unreal Engine.</strong></div><Link to="/contact" onClick={navigate} className="dashboard-more">Have a project? <ArrowUpRight size={16} /></Link></section>
-    <ConversionBand navigate={navigate} />
-  </main>;
-}
-
-function CinemaHome({ navigate }) {
-  return <PortfolioDashboard navigate={navigate} />;
-}
-
-function Home({ navigate }) {
-  return <CinemaHome navigate={navigate} />;
-}
-
-function GalleryRow({ project, navigate }) {
-  return <Link to={project.href} onClick={navigate} className={`gallery-row gallery-${project.accent}`}>
-    <div className="gallery-row-number">{project.number}</div>
-    <div className="gallery-row-copy"><span>{project.type}</span><h2>{project.title}</h2><p>{project.summary}</p><div className="tag-list">{project.tags.map(tag => <span key={tag}>{tag}</span>)}</div></div>
-    <div className="gallery-row-art">{project.slug === 'shieldsense' ? <ShieldArt /> : project.slug === 'voice-assistant' ? <VoiceArt /> : project.slug === 'facial-expression' ? <FaceArt /> : project.slug === 'supernatural' ? <ScrollyArt /> : <UnrealArt />}</div>
-    <ArrowUpRight className="gallery-row-arrow" size={22} />
-  </Link>;
-}
-
-function Work({ navigate }) {
-  return <main className="inner-page gallery-page"><section className="page-hero page-pad"><span className="cinema-overline">WORK / 05 BUILDS</span><h1>A body of work<br /><em>in motion.</em></h1><p>AI agents, security tools, computer vision, cinematic web, and real-time worlds. Explore the systems, experiments, and interfaces behind each project.</p></section><section className="gallery-list page-pad">{projects.map(project => <GalleryRow key={project.slug} project={project} navigate={navigate} />)}</section><ConversionBand navigate={navigate} /></main>;
-}
-
-function CaseStudyLayout({ project, children, navigate }) {
-  return <main className="inner-page case-study"><section className={`case-hero page-pad case-${project.accent}`}><div className="case-hero-top"><Kicker icon={project.slug === 'shieldsense' ? ShieldCheck : Terminal}>{project.type}</Kicker><span className="case-number">{project.number} / 05</span></div><h1>{project.title}</h1><p className="case-intro">{project.summary}</p><div className="tag-list">{project.tags.map(tag => <span key={tag}>{tag}</span>)}</div><div className="case-hero-art">{project.slug === 'shieldsense' ? <ShieldArt /> : project.slug === 'voice-assistant' ? <VoiceArt /> : project.slug === 'facial-expression' ? <FaceArt /> : project.slug === 'supernatural' ? <ScrollyArt /> : <UnrealArt />}</div></section>{children}<section className="case-next page-pad"><span className="eyebrow">KEEP EXPLORING</span><div className="case-next-grid">{projects.filter(item => item.slug !== project.slug).slice(0, 2).map(item => <Link key={item.slug} to={item.href} onClick={navigate} className="next-card"><span>{item.number} / {item.type}</span><strong>{item.title}</strong><ArrowUpRight size={18} /></Link>)}</div></section></main>;
-}
-
-function ShieldSensePage({ navigate }) {
-  const workflowSteps = [
-    ['01', 'Receive', 'A user uploads a message, URL, or piece of data that deserves a closer look.'],
-    ['02', 'Investigate', 'Technical indicators are extracted and checked against URLhaus and ThreatFox.'],
-    ['03', 'Read context', 'The surrounding language is checked for pressure, impersonation, and manipulation signals.'],
-    ['04', 'Recommend', 'The system translates the read into a calm, risk-aware next action.'],
-  ];
-  return <CaseStudyLayout project={projects[0]} navigate={navigate}>
-    <section className="case-section page-pad case-two-col"><div><Kicker icon={Radar}>THE THESIS</Kicker><h2>One message.<br /><em>Two contexts.</em></h2></div><div className="case-copy"><p className="large-copy">A bad link is not the whole story.</p><p>ShieldSense is an AI-powered threat investigation assistant designed to read technical threat signals and human-manipulation signals together. It helps people understand what a message is doing, not just whether a URL has been reported before.</p><p>The goal is decision support: make the safest next move easier to see without pretending that an automated verdict replaces human judgment.</p></div></section>
-    <section className="case-section page-pad"><div className="section-head"><div><Kicker icon={Workflow}>THE PIPELINE</Kicker><h2>From upload<br /><em>to safe move.</em></h2></div><span className="section-note">A calm path through a noisy signal.</span></div><div className="case-workflow">{workflowSteps.map(([num, title, text]) => <div className="case-step" key={num}><span>{num}</span><div><strong>{title}</strong><p>{text}</p></div></div>)}</div></section>
-    <section className="case-section page-pad evidence-section"><div className="evidence-panel"><div className="evidence-panel-head"><span>TECHNICAL TRACE</span><span className="live-dot" /></div><div className="evidence-row"><span>DOMAIN AGE</span><b>RECENT</b><i className="bar"><em style={{ width: '32%' }} /></i></div><div className="evidence-row"><span>REDIRECT CHAIN</span><b>03 HOPS</b><i className="bar"><em style={{ width: '71%' }} /></i></div><div className="evidence-row"><span>IDENTITY MATCH</span><b>LOW</b><i className="bar"><em style={{ width: '24%' }} /></i></div></div><div className="evidence-note"><Kicker icon={ShieldCheck}>RECOMMENDED ACTION / ELEVATED RISK</Kicker><h3>Pause the request.<br /><em>Verify independently.</em></h3><p>ShieldSense puts the evidence beside a clear next move so the user is not left with a scary score and no plan.</p><div className="action-list"><span><CheckCircle2 size={15} /> Do not open the link</span><span><CheckCircle2 size={15} /> Contact through a known channel</span><span><CheckCircle2 size={15} /> Report if needed</span></div></div></section>
-    <section className="case-section page-pad case-two-col"><div><Kicker icon={Terminal}>SECURITY NOTES</Kicker><h2>Design the guardrails<br /><em>into the agent.</em></h2></div><div className="case-copy"><p>For a security-facing agent, a confident answer is not enough. The system needs clear boundaries around what it can inspect, what it can recommend, and what still requires a person.</p><div className="guardrail-list"><span><b>01</b> Minimize what gets stored.</span><span><b>02</b> Keep secrets outside the workflow.</span><span><b>03</b> Treat uploaded content as untrusted.</span><span><b>04</b> Require confirmation for irreversible actions.</span></div></div></section>
-    <section className="case-cta page-pad"><div><Kicker icon={ExternalLink}>LIVE CONCEPT</Kicker><h2>See ShieldSense<br /><em>in its own habitat.</em></h2></div><ButtonLink to="https://shield-sense-mvp.vercel.app/" external>Open the live concept</ButtonLink></section>
-  </CaseStudyLayout>;
-}
-
-function GenericCaseStudy({ project, navigate }) {
-  const content = {
-    'voice-assistant': {
-      icon: Sparkles,
-      thesis: ['Make the assistant', 'feel like a system.'],
-      lead: 'A Flask prototype for conversational interaction, structured commands, and the small details that make a browser-based assistant feel responsive.',
-      details: ['Python + Flask backend', 'HTML interface hosted on a local server', 'JSON-based command and response handling', 'Voice-oriented interaction model'],
-      next: 'Connect the command layer to more useful tools and make the boundary between a spoken request and a safe action explicit.',
-    },
-    'facial-expression': {
-      icon: ScanFace,
-      thesis: ['Perception needs', 'a visible readout.'],
-      lead: 'A Streamlit computer vision lab that makes model output inspectable: choose FER or DeepFace, turn the camera on, and see the signal with confidence and processing time.',
-      details: ['Real-time webcam loop', 'FER and DeepFace model selection', 'Face detection and landmarks', 'Expression scores, confidence, and timing'],
-      next: 'Add a stronger evaluation layer and make the responsible-use limitations as visible as the prediction itself.',
-    },
-    supernatural: {
-      icon: Sparkles,
-      thesis: ['A page can be', 'a moving image.'],
-      lead: 'A cinematic web experience inspired by Supernatural, built around scroll pacing, layered imagery, cursor choreography, ambient grain, and GSAP timelines.',
-      details: ['GSAP + ScrollTrigger animation', 'Responsive narrative sections', 'Layered image direction', 'Custom cursor and ambient texture'],
-      next: 'Keep pushing the balance between spectacle and performance so the story feels immersive on every screen.',
-    },
-    unreal: {
-      icon: Sparkles,
-      thesis: ['Build the frame', 'before the shot.'],
-      lead: 'A real-time 3D environment study in Unreal Engine 5, using Lumen lighting and cinematic camera composition to explore atmosphere and scale.',
-      details: ['Unreal Engine 5 environment design', 'Lumen lighting and reflections', 'Cinematic camera shots', 'Real-time rendering exploration'],
-      next: 'Turn the environment study into a short sequence with a clearer narrative arc, sound, and a more complete lighting breakdown.',
-    },
+function Art({ project, compact = false }) {
+  const art = {
+    shieldsense: <><img src="/assets/shieldsense-preview.webp" alt="ShieldSense interface" /><div className="art-scan" /><div className="art-orbit orbit-a" /><div className="art-orbit orbit-b" /><span className="art-stamp">THREAT / 02</span></>,
+    'voice-assistant': <><div className="voice-orb" /><div className="voice-bars">{Array.from({ length: 13 }).map((_, i) => <i key={i} style={{ '--i': i }} />)}</div><span className="art-stamp">LISTEN / THINK / RESPOND</span></>,
+    'facial-expression': <><div className="face-grid" /><div className="face-box" /><div className="face-scan" /><span className="face-label">EXPRESSION / HAPPY<br /><b>0.86 CONFIDENCE</b></span></>,
+    supernatural: <><div className="scrolly-photo" /><div className="scrolly-word">STORY<br /><em>IN MOTION</em></div><span className="art-stamp">SCROLL / SEQUENCE</span></>,
+    unreal: <><div className="unreal-sky" /><div className="unreal-sun" /><div className="unreal-ridge ridge-one" /><div className="unreal-ridge ridge-two" /><div className="unreal-floor" /><span className="art-stamp">LUMEN / 5.3</span></>,
   }[project.slug];
-  const Icon = content.icon;
-  return <CaseStudyLayout project={project} navigate={navigate}><section className="case-section page-pad case-two-col"><div><Kicker icon={Icon}>THE IDEA</Kicker><h2>{content.thesis[0]}<br /><em>{content.thesis[1]}</em></h2></div><div className="case-copy"><p className="large-copy">{content.lead}</p><p>This project is part of a wider practice: explore a technical idea, give it a usable surface, and document what the prototype taught me.</p></div></section><section className="case-section page-pad"><div className="section-head"><div><Kicker icon={Terminal}>WHAT’S INSIDE</Kicker><h2>The parts that<br /><em>make it real.</em></h2></div></div><div className="detail-grid">{content.details.map((detail, index) => <div className="detail-card" key={detail}><span>0{index + 1}</span><strong>{detail}</strong></div>)}</div></section><section className="case-section page-pad build-note"><div className="build-note-art">{project.slug === 'voice-assistant' ? <VoiceArt /> : project.slug === 'facial-expression' ? <FaceArt /> : project.slug === 'supernatural' ? <ScrollyArt /> : <UnrealArt />}</div><div className="case-copy"><Kicker icon={Workflow}>NEXT ITERATION</Kicker><h3>What I would build next.</h3><p>{content.next}</p>{project.live && <ButtonLink to={project.live} external variant="ghost">View source on GitHub</ButtonLink>}</div></section></CaseStudyLayout>;
+  return <div className={`project-art art-${project.accent} ${compact ? 'is-compact' : ''}`}>{art}</div>;
 }
 
-function About({ navigate }) {
-  return <main className="inner-page"><section className="page-hero page-pad about-hero"><div><Kicker icon={Sparkles}>ABOUT / NM SYSTEMS</Kicker><h1>Technical curiosity,<br /><em>with follow-through.</em></h1></div><div className="about-hero-image"><img src={portrait} alt="Nikhil Madipadige" /><span>MADE IN HYDERABAD</span></div></section><section className="about-story page-pad case-two-col"><div><Kicker icon={Radar}>THE SHORT VERSION</Kicker><h2>Build it.<br /><em>Understand it.</em></h2></div><div className="case-copy"><p className="large-copy">I’m a Computer Science student specializing in Cybersecurity, building at the intersection of intelligent systems, security, and creative technology.</p><p>I’m strongest in n8n and AI agents, and I’m comfortable moving from an idea to a working prototype with Python, Flask, Streamlit, frontend tools, and real-time 3D. I like projects that have a human on the other side of the interface and a clear reason to exist.</p><p>Right now I’m looking for freelance build sprints, collaborations, and internships where I can ship useful work quickly and keep learning in public.</p></div></section><section className="capability-section page-pad"><div className="section-head"><div><Kicker icon={Workflow}>WHAT I BRING</Kicker><h2>A broad toolkit.<br /><em>A clear filter.</em></h2></div></div><div className="capability-grid">{capabilities.map(([title, text], index) => <div className="capability-card" key={title} data-scroll-reveal><span>0{index + 1}</span><strong>{title}</strong><p>{text}</p></div>)}</div></section><section className="timeline-section page-pad"><div className="section-head"><div><Kicker icon={Terminal}>CURRENTLY</Kicker><h2>In the middle<br /><em>of the build.</em></h2></div></div><div className="timeline"><div><span>2026 → now</span><strong>B.Tech / Computer Science (Cyber Security)</strong><p>St. Peter’s Engineering College</p></div><div><span>Community</span><strong>R&amp;D Cell / Techfest, IIT Bombay</strong><p>Research-minded collaboration and outreach.</p></div><div><span>Next</span><strong>Freelance build sprints</strong><p>AI automation, security prototypes, and interactive sites.</p></div></div></section><ConversionBand navigate={navigate} /></main>;
+function SmartLink({ to, children, className = '', onClick, external = false }) {
+  const isExternal = external || to?.startsWith('http') || to?.startsWith('mailto:');
+  if (isExternal) return <a href={to} className={className} target={to?.startsWith('http') ? '_blank' : undefined} rel={to?.startsWith('http') ? 'noreferrer' : undefined}>{children}</a>;
+  return <a href={to} className={className} onClick={(e) => { e.preventDefault(); onClick?.(to); }}>{children}</a>;
 }
 
-function Contact({ navigate }) {
-  return <main className="inner-page contact-page"><section className="page-hero page-pad"><Kicker icon={Mail}>CONTACT / BUILD WITH ME</Kicker><h1>Let’s make the<br /><em>hard thing clear.</em></h1><p>Have an automation that should exist, a security idea that needs a prototype, or a digital experience that needs more atmosphere? Send the signal.</p><div className="contact-actions"><ButtonLink to={email}>Email me directly</ButtonLink><ButtonLink to={resume} external variant="ghost">Download résumé <Download size={16} /></ButtonLink></div></section><section className="contact-grid page-pad"><div className="contact-panel"><span className="eyebrow">OPEN FOR</span><h2>Freelance projects<br /><em>& thoughtful collaborations.</em></h2><div className="contact-list"><a href={email}><Mail size={18} /><span>madipadige.nikhil4u@gmail.com</span><ArrowUpRight size={16} /></a><a href={linkedin} target="_blank" rel="noreferrer"><Linkedin size={18} /><span>linkedin.com/in/nikhil-madipadige</span><ArrowUpRight size={16} /></a><a href={github} target="_blank" rel="noreferrer"><Github size={18} /><span>github.com/nikhilmadipadige</span><ArrowUpRight size={16} /></a></div></div><div className="availability-card"><div className="availability-orbit"><span /><span /><span /></div><Kicker icon={Radar}>CURRENT SIGNAL</Kicker><strong>Available for focused build sprints.</strong><p>Best fit: AI automation, agent workflows, security-aware prototypes, and interactive frontend experiences.</p><span className="availability-code">STATUS / OPEN_01</span></div></section><section className="contact-bottom page-pad"><span>Good work starts with a clear first message.</span><Link to="/work" onClick={navigate}>See what I build <ArrowUpRight size={16} /></Link></section></main>;
+function Header({ navigate, onMenu }) {
+  return <header className="heavy-header"><SmartLink to="/" onClick={navigate} className="heavy-logo"><span>NM</span><b>NIKHIL</b><i>/{' '}SYSTEMS</i></SmartLink><div className="header-center"><span>PORTFOLIO / 2026</span><span className="header-line" /><span>HYDERABAD → WORLDWIDE</span></div><div className="header-right"><span className="live-label"><i /> AVAILABLE FOR WORK</span><button className="header-menu" onClick={onMenu}><Menu size={20} /></button></div></header>;
 }
 
-function NotFound({ navigate }) {
-  return <main className="inner-page"><section className="page-hero page-pad"><Kicker icon={Terminal}>404 / SIGNAL LOST</Kicker><h1>That route<br /><em>doesn’t exist.</em></h1><ButtonLink to="/" navigate={navigate}>Back to the signal</ButtonLink></section></main>;
+function Rail({ navigate }) {
+  return <aside className="heavy-rail"><div className="rail-index">INDEX / 00—05</div><div className="rail-monogram">NM</div><nav><SmartLink to="/" onClick={navigate}>INDEX <span>00</span></SmartLink><SmartLink to="/work" onClick={navigate}>WORK <span>05</span></SmartLink><SmartLink to="/about" onClick={navigate}>PROFILE <span>01</span></SmartLink><SmartLink to="/contact" onClick={navigate}>CONTACT <span>→</span></SmartLink></nav><div className="rail-portrait"><img src={portrait} alt="Nikhil" /><span>OPEN TO WORK</span></div><div className="rail-bottom"><a href={github} target="_blank" rel="noreferrer"><Github size={15} /></a><a href={linkedin} target="_blank" rel="noreferrer"><Linkedin size={15} /></a><a href={email}><Mail size={15} /></a></div></aside>;
 }
+
+function Intro({ navigate }) {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
+  const y = useTransform(scrollYProgress, [0, 1], [0, 240]);
+  const rotate = useTransform(scrollYProgress, [0, 1], [0, -5]);
+  return <section ref={ref} className="heavy-intro"><div className="intro-noise" /><motion.div className="intro-copy" style={{ y }} initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .9, ease: [.22, 1, .36, 1] }}><span className="eyebrow">NIKHIL MADIPADIGE / COMPUTER SCIENCE + CYBERSECURITY</span><h1>Build<br /><em>the</em><br />signal.</h1><p>I make AI agents, security tools, and interactive worlds for people who want technology to feel less abstract.</p><div className="intro-actions"><SmartLink to="/work" onClick={navigate} className="heavy-button">ENTER THE WORK <ArrowDownRight size={18} /></SmartLink><SmartLink to="/contact" onClick={navigate} className="text-button">HIRE ME <ArrowUpRight size={16} /></SmartLink></div></motion.div><motion.div className="intro-object" style={{ y, rotate }} initial={{ opacity: 0, scale: .82, rotate: 8 }} animate={{ opacity: 1, scale: 1, rotate: 2 }} transition={{ duration: 1.2, delay: .15, ease: [.22, 1, .36, 1] }}><div className="object-shadow" /><img src={portrait} alt="Nikhil performing with a guitar" /><div className="object-copy"><span>01 / CREATOR</span><b>TECHNICAL<br />CURIOSITY</b></div><div className="object-line" /></motion.div><div className="intro-aside"><span>SCROLL TO MOVE</span><i /></div><div className="intro-corner">A PORTFOLIO FOR<br />PEOPLE WHO BUILD</div></section>;
+}
+
+function Marquee() { return <div className="heavy-marquee"><div>{Array.from({ length: 5 }).map((_, i) => <React.Fragment key={i}><span>AI AGENTS</span><b>×</b><span>SECURITY</span><b>×</b><span>INTERACTIVE WORLDS</span><b>×</b></React.Fragment>)}</div></div>; }
+
+function ProjectCard({ project, index, navigate, onOpen }) {
+  const x = useMotionValue(0); const y = useMotionValue(0); const sx = useSpring(x, { stiffness: 180, damping: 20 }); const sy = useSpring(y, { stiffness: 180, damping: 20 });
+  return <motion.article className={`heavy-card card-${project.accent} ${index === 0 ? 'card-wide' : ''}`} layoutId={`card-${project.slug}`} onPointerMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); x.set((e.clientX - r.left - r.width / 2) * .04); y.set((e.clientY - r.top - r.height / 2) * .04); }} onPointerLeave={() => { x.set(0); y.set(0); }} whileHover={{ y: -10 }} transition={{ type: 'spring', stiffness: 240, damping: 20 }} onClick={() => onOpen(project)}><motion.div className="card-inner" style={{ x: sx, y: sy }}><Art project={project} /><div className="card-overlay" /><div className="card-top"><span>{project.number}</span><MoveUpRight size={19} /></div><div className="card-copy"><span>{project.kicker}</span><h3>{project.title}</h3><p>{project.summary}</p><div className="tag-row">{project.tags.map(tag => <b key={tag}>{tag}</b>)}</div></div></motion.div></motion.article>;
+}
+
+function WorkGrid({ navigate, onOpen }) {
+  const [filter, setFilter] = useState('ALL');
+  const filters = ['ALL', 'AI', 'SECURITY', 'CREATIVE', 'WORLDS'];
+  const visible = projects.filter((p) => filter === 'ALL' || p.category.toUpperCase() === filter);
+  return <section className="heavy-work" id="work"><div className="work-heading"><div><span className="eyebrow">SELECTED WORK / 05 OBJECTS</span><h2>Some things<br /><em>I made.</em></h2></div><p>Click into the work. Drag your attention around. Every build starts with a signal and ends with something tangible.</p></div><div className="filter-row">{filters.map((filterName) => <button key={filterName} className={filter === filterName ? 'active' : ''} onClick={() => setFilter(filterName)}>{filterName}</button>)}</div><motion.div layout className="heavy-grid">{visible.map((project, index) => <ProjectCard key={project.slug} project={project} index={index} navigate={navigate} onOpen={onOpen} />)}</motion.div></section>;
+}
+
+function ProjectModal({ project, close, navigate }) {
+  return <motion.div className="project-modal-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={close}><motion.article className={`project-modal modal-${project.accent}`} layoutId={`card-${project.slug}`} onClick={(e) => e.stopPropagation()} initial={{ y: 40 }} animate={{ y: 0 }} exit={{ y: 40 }}><button className="modal-close" onClick={close}><X size={22} /></button><div className="modal-visual"><Art project={project} /></div><div className="modal-info"><span className="eyebrow">{project.number} / {project.kicker}</span><h2>{project.title}</h2><p>{project.summary}</p><div className="modal-tags">{project.tags.map(tag => <span key={tag}>{tag}</span>)}</div><div className="modal-actions"><SmartLink to={`/work/${project.slug}`} onClick={(to) => { close(); navigate(to); }} className="heavy-button">OPEN CASE STUDY <ArrowUpRight size={17} /></SmartLink>{project.live && <SmartLink to={project.live} external className="text-button">LIVE / SOURCE <ArrowUpRight size={16} /></SmartLink>}</div></div></motion.article></motion.div>;
+}
+
+function Home({ navigate, openProject }) { return <main><Intro navigate={navigate} /><Marquee /><WorkGrid navigate={navigate} onOpen={openProject} /><section className="heavy-statement"><span className="eyebrow">THE WORKING PRINCIPLE</span><h2>Make complex things<br /><em>feel obvious.</em></h2><SmartLink to="/contact" onClick={navigate} className="heavy-button">START A CONVERSATION <ArrowUpRight size={18} /></SmartLink></section></main>; }
+
+function Work({ navigate, openProject }) { return <main className="work-page"><div className="page-intro"><span className="eyebrow">WORK / 05 OBJECTS</span><h1>Built for<br /><em>the real world.</em></h1><p>AI agents, threat intelligence, computer vision, cinematic web, and real-time 3D. Browse the experiments.</p></div><WorkGrid navigate={navigate} onOpen={openProject} /></main>; }
+
+function About({ navigate }) { return <main className="text-page"><div className="page-intro"><span className="eyebrow">PROFILE / NIKHIL MADIPADIGE</span><h1>Curious by<br /><em>construction.</em></h1><p>I’m a Computer Science student specializing in Cybersecurity. I build at the intersection of intelligent systems, safety, and creative technology.</p></div><section className="about-heavy"><div className="about-photo"><img src={portrait} alt="Nikhil" /><span>HYDERABAD / INDIA</span></div><div className="about-copy"><span className="eyebrow">THE SHORT VERSION</span><h2>Give an idea<br /><em>a surface.</em></h2><p>I’m strongest in n8n and AI agents, and I’m comfortable moving from a technical idea to a working prototype with Python, Flask, Streamlit, frontend tools, and Unreal Engine.</p><p>I’m looking for freelance build sprints, collaborations, and internships where I can ship useful work quickly and keep learning in public.</p><div className="about-links"><SmartLink to={resume} external>RÉSUMÉ <Download size={15} /></SmartLink><SmartLink to={linkedin} external>LINKEDIN <ArrowUpRight size={15} /></SmartLink><SmartLink to={github} external>GITHUB <ArrowUpRight size={15} /></SmartLink></div></div></section></main>; }
+
+function Contact() { return <main className="contact-heavy"><span className="eyebrow">CONTACT / OPEN CHANNEL</span><h1>Make something<br /><em>impossible to ignore.</em></h1><p>Have an AI workflow, security idea, or interactive experience that needs a first version? Send the signal.</p><SmartLink to={email} external className="contact-email">madipadige.nikhil4u@gmail.com <ArrowUpRight size={25} /></SmartLink><div className="contact-grid-heavy"><span>HYDERABAD / INDIA</span><span>AVAILABLE WORLDWIDE</span><span>RESPONSE / 24—48H</span></div></main>; }
+
+function CaseStudy({ project, navigate }) { return <main className={`case-heavy case-${project.accent}`}><section className="case-top"><span className="eyebrow">{project.number} / {project.kicker}</span><h1>{project.title}</h1><p>{project.summary}</p><div className="case-tags">{project.tags.map(tag => <span key={tag}>{tag}</span>)}</div></section><section className="case-art-wrap"><Art project={project} /></section><section className="case-copy-heavy"><div><span className="eyebrow">THE READ</span><h2>Make the signal<br /><em>understandable.</em></h2></div><div><p>{project.summary} The project turns a technical idea into a visible, inspectable experience with a clear next action.</p><p>This build is part of a wider practice: explore a system, give it a human surface, then keep pushing until the interface has a point of view.</p>{project.live && <SmartLink to={project.live} external className="heavy-button">OPEN LIVE / SOURCE <ArrowUpRight size={18} /></SmartLink>}</div></section><SmartLink to="/work" onClick={navigate} className="case-back"><ArrowUpRight size={18} /> BACK TO WORK</SmartLink></main>; }
 
 function App() {
-  const { path, navigate } = usePath();
-  useSmoothMotion(path);
-  const view = useMemo(() => {
-    if (path === '/') return <Home navigate={navigate} />;
-    if (path === '/work') return <Work navigate={navigate} />;
-    if (path === '/about') return <About navigate={navigate} />;
-    if (path === '/contact') return <Contact navigate={navigate} />;
-    if (path === '/work/shieldsense') return <ShieldSensePage navigate={navigate} />;
-    const project = projects.find(item => `/work/${item.slug}` === path);
-    if (project) return <GenericCaseStudy project={project} navigate={navigate} />;
-    return <NotFound navigate={navigate} />;
-  }, [path, navigate]);
-  return <><Cursor /><Header navigate={navigate} />{view}<Footer navigate={navigate} /></>;
+  const { path, navigate } = usePath(); const [menu, setMenu] = useState(false); const [open, setOpen] = useState(null);
+  const project = projects.find((p) => `/work/${p.slug}` === path);
+  const view = path === '/' ? <Home navigate={navigate} openProject={setOpen} /> : path === '/work' ? <Work navigate={navigate} openProject={setOpen} /> : path === '/about' ? <About navigate={navigate} /> : path === '/contact' ? <Contact /> : project ? <CaseStudy project={project} navigate={navigate} /> : <Home navigate={navigate} openProject={setOpen} />;
+  return <div className="app"><Header navigate={navigate} onMenu={() => setMenu(!menu)} /><Rail navigate={navigate} /><AnimatePresence>{menu && <motion.div className="mobile-menu" initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }}><SmartLink to="/" onClick={() => { setMenu(false); navigate('/'); }}>INDEX</SmartLink><SmartLink to="/work" onClick={() => { setMenu(false); navigate('/work'); }}>WORK</SmartLink><SmartLink to="/about" onClick={() => { setMenu(false); navigate('/about'); }}>PROFILE</SmartLink><SmartLink to="/contact" onClick={() => { setMenu(false); navigate('/contact'); }}>CONTACT</SmartLink></motion.div>}</AnimatePresence>{view}<AnimatePresence>{open && <ProjectModal project={open} close={() => setOpen(null)} navigate={navigate} />}</AnimatePresence><footer className="heavy-footer"><span>© 2026 / NIKHIL MADIPADIGE</span><span>BUILT WITH INTENT / MOTION</span><span><a href={email}>EMAIL</a> · <a href={github} target="_blank" rel="noreferrer">GITHUB</a></span></footer></div>;
 }
 
 createRoot(document.getElementById('root')).render(<App />);
