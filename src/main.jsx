@@ -12,8 +12,10 @@ import {
   ExternalLink,
   Github,
   Linkedin,
+  MapPin,
   Mail,
   Menu,
+  Search,
   Radar,
   ScanFace,
   ShieldCheck,
@@ -210,29 +212,26 @@ function Header({ navigate }) {
   const [open, setOpen] = useState(false);
   const go = (to) => { setOpen(false); navigate(to); };
   return (
-    <header className={`site-header ${open ? 'is-open' : ''}`}>
-      <div className="header-inner">
-        <Link to="/" className="wordmark" onClick={go}>
-          <span className="wordmark-mark">NM</span>
-          <span className="wordmark-copy"><strong>Nikhil</strong><small>/ systems</small></span>
-        </Link>
-        <nav className="desktop-nav" aria-label="Main navigation">
-          <Link to="/work" onClick={go}>Work</Link>
-          <Link to="/about" onClick={go}>About</Link>
-          <Link to="/contact" onClick={go}>Contact</Link>
-        </nav>
-        <div className="header-actions">
-          <span className="availability"><span className="pulse-dot" /> Open for build sprints</span>
-          <button className="menu-toggle" type="button" aria-label="Toggle navigation" onClick={() => setOpen(!open)}>
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
+    <header className={`site-header portfolio-shell ${open ? 'is-open' : ''}`}>
+      <aside className="profile-rail">
+        <Link to="/" className="rail-brand" onClick={go}><span className="wordmark-mark">NM</span><span>nikhil<span className="rail-slash">/</span></span></Link>
+        <div className="rail-profile">
+          <div className="rail-avatar"><img src={portrait} alt="Nikhil Madipadige" /></div>
+          <span className="rail-status"><span className="pulse-dot" /> Open to work</span>
+          <h1>Nikhil<br />Madipadige</h1>
+          <p>Cybersecurity student<br />+ AI automation builder</p>
+          <span className="rail-location"><MapPin size={13} /> Hyderabad, India</span>
         </div>
+        <div className="rail-actions"><a href={email} className="rail-contact"><Mail size={15} /> Contact me <ArrowUpRight size={14} /></a><div className="rail-socials"><a href={github} target="_blank" rel="noreferrer"><Github size={16} /></a><a href={linkedin} target="_blank" rel="noreferrer"><Linkedin size={16} /></a><a href={resume} target="_blank" rel="noreferrer"><Download size={16} /></a></div></div>
+        <nav className="rail-nav" aria-label="Portfolio navigation"><Link to="/about" onClick={go} className="rail-nav-link"><span>Profile</span><ArrowUpRight size={14} /></Link><Link to="/work" onClick={go} className="rail-nav-link is-active"><span>Portfolio</span><ArrowUpRight size={14} /></Link><Link to="/contact" onClick={go} className="rail-nav-link"><span>Hire me</span><ArrowUpRight size={14} /></Link></nav>
+        <span className="rail-footer">NM / 2026</span>
+      </aside>
+      <div className="app-topbar">
+        <Link to="/" className="mobile-brand" onClick={go}><span className="wordmark-mark">NM</span><strong>nikhil</strong></Link>
+        <div className="portfolio-search"><Search size={15} /><span>Search the portfolio</span><kbd>⌘ K</kbd></div>
+        <div className="topbar-right"><span className="topbar-count">05 projects</span><Link to="/contact" onClick={go} className="topbar-cta">Start a project <ArrowUpRight size={14} /></Link><button className="menu-toggle" type="button" aria-label="Toggle navigation" onClick={() => setOpen(!open)}>{open ? <X size={20} /> : <Menu size={20} />}</button></div>
       </div>
-      <nav className="mobile-nav" aria-label="Mobile navigation">
-        <Link to="/work" onClick={go}>Work <ArrowUpRight size={16} /></Link>
-        <Link to="/about" onClick={go}>About <ArrowUpRight size={16} /></Link>
-        <Link to="/contact" onClick={go}>Contact <ArrowUpRight size={16} /></Link>
-      </nav>
+      <nav className="mobile-nav" aria-label="Mobile navigation"><Link to="/about" onClick={go}>Profile <ArrowUpRight size={16} /></Link><Link to="/work" onClick={go}>Portfolio <ArrowUpRight size={16} /></Link><Link to="/contact" onClick={go}>Contact <ArrowUpRight size={16} /></Link></nav>
     </header>
   );
 }
@@ -437,20 +436,31 @@ function ReelPanel({ project, navigate }) {
   </Link>;
 }
 
-function CinemaHome({ navigate }) {
-  return <main className="cinema-home">
-    <section className="cinema-hero page-pad">
-      <div className="cinema-hero-copy" data-reveal><span className="cinema-overline">NIKHIL MADIPADIGE / 2026</span><h1>Ideas become<br /><em>real things.</em></h1><p>I build AI agents, security tools, and interactive experiences that make complex technology easier to understand and use.</p><div className="hero-actions"><ButtonLink to="/work" navigate={navigate}>View the reel</ButtonLink><ButtonLink to="/contact" variant="ghost" navigate={navigate}>Work with me</ButtonLink></div></div>
-      <div className="cinema-portrait" data-reveal><img src={portrait} alt="Nikhil Madipadige performing with a guitar" /><div className="cinema-portrait-caption"><span>HYDERABAD / INDIA</span><strong>01</strong></div><div className="cinema-portrait-line" /></div>
-      <div className="cinema-scroll-cue"><span>SCROLL</span><i /></div>
-    </section>
-    <section className="reel-section" data-horizontal>
-      <div className="reel-intro page-pad"><div><span className="cinema-overline">SELECTED WORK / 05 BUILDS</span><h2>Make it work.<br /><em>Make it felt.</em></h2></div><p>Security, agents, computer vision, story, and real-time worlds — each project starts as a technical question and becomes something you can experience.</p></div>
-      <div className="reel-pin"><div className="reel-track">{projects.map(project => <ReelPanel key={project.slug} project={project} navigate={navigate} />)}</div></div>
-    </section>
-    <section className="studio-section page-pad"><div className="studio-heading"><span className="cinema-overline">WHAT I CAN HELP SHIP</span><h2>Useful systems.<br /><em>Good atmosphere.</em></h2></div><div className="studio-services"><div><span>01</span><strong>AI workflows</strong><p>Agents and automations that connect input, reasoning, and action.</p></div><div><span>02</span><strong>Security prototypes</strong><p>Threat-aware tools that help people make a safer next move.</p></div><div><span>03</span><strong>Interactive web</strong><p>Interfaces, stories, and experiences with a point of view.</p></div></div></section>
+function PortfolioTile({ project, navigate, featured = false }) {
+  return <Link to={project.href} onClick={navigate} className={`portfolio-tile tile-${project.accent} ${featured ? 'is-featured' : ''}`}>
+    <div className="tile-visual">{project.slug === 'shieldsense' ? <ShieldArt /> : project.slug === 'voice-assistant' ? <VoiceArt /> : project.slug === 'facial-expression' ? <FaceArt /> : project.slug === 'supernatural' ? <ScrollyArt /> : <UnrealArt />}</div>
+    <div className="tile-wash" />
+    <div className="tile-top"><span>{project.number} / {project.type}</span><ArrowUpRight size={17} /></div>
+    <div className="tile-bottom"><h3>{project.title}</h3><p>{project.summary}</p><div className="tag-list">{project.tags.slice(0, 3).map(tag => <span key={tag}>{tag}</span>)}</div></div>
+  </Link>;
+}
+
+function PortfolioDashboard({ navigate }) {
+  const [filter, setFilter] = useState('All');
+  const categories = ['All', 'AI + Security', 'Creative web', 'Computer vision', '3D'];
+  const categoryMap = { shieldsense: 'AI + Security', 'voice-assistant': 'AI + Security', 'facial-expression': 'Computer vision', supernatural: 'Creative web', unreal: '3D' };
+  const visibleProjects = filter === 'All' ? projects : projects.filter(project => categoryMap[project.slug] === filter);
+  return <main className="portfolio-dashboard">
+    <section className="dashboard-welcome page-pad"><div className="dashboard-welcome-copy"><span className="dashboard-label">PORTFOLIO / PROFILE</span><h1>Hi, I’m <em>Nikhil.</em></h1><p>I build AI agents, security tools, and interactive digital experiences. I’m interested in the space where a technical system becomes something people can actually use.</p><div className="dashboard-actions"><ButtonLink to="/work" navigate={navigate}>Browse all work</ButtonLink><ButtonLink to="/about" navigate={navigate} variant="ghost">View profile</ButtonLink></div></div><div className="dashboard-status"><span className="dashboard-status-top"><span className="pulse-dot" /> OPEN TO WORK</span><strong>Available for freelance projects, internships, and collaborations.</strong><span className="dashboard-status-meta">Updated / Nov 2026</span></div></section>
+    <section className="dashboard-feature page-pad"><div className="dashboard-section-head"><div><span className="dashboard-label">FEATURED PROJECT / 01</span><h2>Start with<br /><em>ShieldSense.</em></h2></div><Link to="/work/shieldsense" onClick={navigate} className="dashboard-more">Open case study <ArrowUpRight size={16} /></Link></div><Link to="/work/shieldsense" onClick={navigate} className="feature-project"><div className="feature-project-visual"><ShieldArt /></div><div className="feature-project-info"><span className="feature-kicker">AI THREAT INVESTIGATION ASSISTANT</span><h3>Reading the signal<br /><em>behind the message.</em></h3><p>ShieldSense reads technical threat signals and human manipulation signals together, then makes the safest next move easier to see.</p><div className="feature-project-meta"><span>URLhaus</span><span>ThreatFox</span><span>AI agent</span><span>Decision support</span></div><span className="feature-open">View project <ArrowUpRight size={16} /></span></div></Link></section>
+    <section className="dashboard-work page-pad"><div className="dashboard-section-head"><div><span className="dashboard-label">PORTFOLIO / 05 PROJECTS</span><h2>More things<br /><em>I’ve built.</em></h2></div><span className="dashboard-section-note">Filter by the kind of problem you want to solve.</span></div><div className="project-filters">{categories.map(category => <button type="button" key={category} className={filter === category ? 'is-selected' : ''} onClick={() => setFilter(category)}>{category}</button>)}</div><div className="portfolio-grid">{visibleProjects.map((project, index) => <PortfolioTile key={project.slug} project={project} navigate={navigate} featured={index === 0 && filter !== 'All'} />)}</div></section>
+    <section className="dashboard-bottom page-pad"><div><span className="dashboard-label">CURRENTLY</span><strong>Building with n8n, Python, Flask, Streamlit, GSAP, and Unreal Engine.</strong></div><Link to="/contact" onClick={navigate} className="dashboard-more">Have a project? <ArrowUpRight size={16} /></Link></section>
     <ConversionBand navigate={navigate} />
   </main>;
+}
+
+function CinemaHome({ navigate }) {
+  return <PortfolioDashboard navigate={navigate} />;
 }
 
 function Home({ navigate }) {
