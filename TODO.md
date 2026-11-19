@@ -1,28 +1,28 @@
-# Portfolio implementation outcomes
+# Cinematic gallery implementation outcomes
 
-## Build the dark animated portfolio foundation
-- Deliver a responsive dark-only portfolio with cyan accents, engineering panels, workflow motifs, cinematic previews, and mobile-friendly layouts.
-- Use GSAP and Lenis for smooth scrolling, scroll-triggered reveals, project transitions, hover states, and subtle ambient motion.
+## Reframe the site around Nikhil’s actual voice
+- Replace invented agency/system language with the direct identity and tone from the previous portfolio: Nikhil Madipadige, Cybersecurity + AI, honest experimental builder, and concise factual project descriptions.
+- Use a simple header with name, focus, Work, Profile, and Contact; remove the fixed template-like rail and decorative metadata language.
 
-## Build the homepage conversion experience
-- Include a strong personal-brand hero, portrait, positioning statement, primary calls to action, and concise freelance/recruiter messaging.
-- Make ShieldSense the featured project and expose clear paths to work, contact, GitHub, LinkedIn, and resume.
+## Build the cinematic gallery homepage
+- Create a shorter first screen with a cinematic portrait treatment and a direct statement of the work: investigate, listen, see, and render.
+- Use the supplied portrait naturally as a visual identity element with crop, depth, and restrained annotation rather than a generic profile card.
+- Bring the project gallery into the opening scroll instead of delaying work behind a large decorative hero.
 
-## Build the projects showcase
-- Feature ShieldSense, virtual voice assistant, facial expression detection system, Supernatural scrollytelling website, Unreal Engine 5 environment, and AI automation work.
-- Include project technology tags, external links, visual previews, and clear project summaries.
+## Turn projects into full-screen gallery scenes
+- Present ShieldSense, SamurAI, Expression Lab, Supernatural / Scrolly, and Star Wars / Unreal as a visual archive with large project imagery and short factual descriptions.
+- Hovering or focusing a project must transform the preview field into that project’s visual world; clicking must open the project modal or case-study route.
+- Preserve project technology tags, external links, live/source paths, and truthful summaries.
 
-## Build the ShieldSense flagship case study
-- Include the threat-investigation narrative, workflow diagram, URLhaus and ThreatFox context, risk-aware action recommendations, visuals, and project link.
+## Use motion as cinematic transition language
+- Use Motion for staged hero entrances, scroll-linked image movement, preview crossfades, project-specific visual behavior, and card-to-case-study transitions.
+- Keep motion purposeful: ShieldSense scans, SamurAI pulses, Expression Lab tracks, Supernatural cuts, and Unreal moves like a camera.
+- Keep the interface responsive and disable or simplify cursor-only effects on touch devices.
 
-## Build supporting project detail views
-- Provide dedicated detail pages or expanded case-study views for the voice assistant, facial expression detector, scrollytelling website, and Unreal Engine project.
+## Preserve conversion and proof
+- Keep clear links to email, LinkedIn, GitHub, resume, and project sources.
+- Keep compact technical proof in case studies: role, stack, status, and project category.
+- Keep the site dark-only, mobile-responsive, and Vercel-ready.
 
-## Build the about and capabilities experience
-- Cover cybersecurity, AI agents, n8n, Python, frontend development, computer vision, Linux/networking foundations, and creative technical work.
-
-## Build contact and conversion surfaces
-- Include email, LinkedIn, GitHub, resume access, and freelance-oriented calls to action.
-
-## Connect and checkpoint the project
-- Keep the app Vercel-ready and push the completed project to the connected GitHub repository's main branch.
+## Connect and checkpoint
+- Run the production build, keep /manus-routes.json synchronized, and push the finished cinematic gallery to the connected GitHub repository main branch.
