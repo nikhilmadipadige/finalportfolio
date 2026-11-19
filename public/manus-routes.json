@@ -1,0 +1,13 @@
+{
+  "routes": [
+    { "path": "/", "title": "Home" },
+    { "path": "/work", "title": "Work" },
+    { "path": "/work/shieldsense", "title": "ShieldSense" },
+    { "path": "/work/voice-assistant", "title": "Virtual Voice Assistant" },
+    { "path": "/work/facial-expression", "title": "Facial Expression Detection" },
+    { "path": "/work/supernatural", "title": "Supernatural Scrollytelling" },
+    { "path": "/work/unreal", "title": "Unreal Engine Environment" },
+    { "path": "/about", "title": "About" },
+    { "path": "/contact", "title": "Contact" }
+  ]
+}
