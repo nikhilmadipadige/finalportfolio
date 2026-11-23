@@ -1,25 +1,25 @@
-# Interactive technology practice implementation outcomes
+# Continuous scene portfolio implementation outcomes
 
-## Client-facing positioning and structure
-- Present Nikhil Madipadige as a direct, honest technical builder who turns ambiguous ideas into working AI, security, automation, and interactive prototypes.
-- Use a simple dark-only shell with Home, Work, About, Contact, a clear availability signal, and a first-screen positioning statement that explains the value quickly.
-- Keep supporting routes for the profile, contact channel, five project case studies, and the work index.
+## Reframe the portfolio as an interactive identity system
+- Replace the previous editorial/card-led portfolio structure with one continuous scene that feels like an interactive technical instrument.
+- Open with a branded loader, a quiet monochrome hero, a central glossy object, four-corner HUD framing, technical counters, and restrained typography.
+- Keep the first message concise: Nikhil builds AI systems, security tools, automation, and interactive worlds as working experiments.
 
-## Purposeful Motion + WebGL layer
-- Use Motion for staged entrances, viewport reveals, scroll-linked image movement, modal transitions, and route-level interaction.
-- Use Lenis for smooth scrolling without hiding content or making touch interactions dependent on a cursor.
-- Use one shared lazy-loaded Three.js signal field whose color, speed, scale, density, and visual state change with the active section or project.
-- Cap pixel ratio, pause the canvas when it is not visible, simplify motion for prefers-reduced-motion, and keep the field behind readable content.
+## Build the persistent scene director
+- Use one lazy-loaded Three.js canvas across the full scene track instead of one canvas per section.
+- Morph the central object between glossy material, wireframe, particle, scan, and network states as the user scrolls through origin, practice, security, voice, vision, scrolly, Unreal, and contact.
+- Add pointer-responsive deformation and camera movement, orbital rings, stars, network nodes, scan lines, and project-specific restrained tints.
+- Cap pixel ratio, pause when hidden, simplify on mobile, and honor prefers-reduced-motion.
 
-## Evidence-led selected work
-- Present ShieldSense, SamurAI, Expression Lab, Supernatural / Scrolly, and Star Wars / Unreal as long-form project chapters rather than generic cards.
-- Preserve truthful summaries, technical tags, live/source links, supplied imagery, case-study routes, and compact role/stack/status/outcome proof.
-- Let project chapters open a modal or dedicated case-study route while the shared field adopts the project’s visual state.
+## Make projects spatial evidence
+- Present ShieldSense, SamurAI, Expression Lab, Supernatural / Scrolly, and Star Wars / Unreal as scene states with sparse annotations, short truthful descriptions, technical tags, project evidence frames, live/source links, and case-study routes.
+- Replace stacked cards and repeated large section blocks with a sliding system index and continuous stage transitions.
+- Preserve the supplied portrait, resume, email, LinkedIn, GitHub, and all real project destinations on supporting routes.
 
-## Conversion and responsive delivery
-- Keep working email, LinkedIn, GitHub, resume, project links, and a direct contact CTA available throughout the site.
-- Keep the system responsive for mobile, dark-only, Vercel-ready, and compatible with the managed preview runtime.
-- Keep `/manus-routes.json` synchronized with every supported page route.
+## Keep the experience responsive and deliverable
+- Use Lenis for damped scene movement and Motion for loader, stage-copy, evidence, and index-panel choreography.
+- Keep the dark-only interface readable on mobile with a simplified spatial layout rather than a generic collapsed desktop grid.
+- Keep `/manus-routes.json` synchronized with Home, Work, About, Contact, and all five case-study routes.
 
-## Connect and checkpoint
-- Verify the production build, diff cleanliness, preview rendering, home/contact routes, and runtime console before pushing the finished implementation to the connected GitHub repository main branch.
+## Verify and checkpoint
+- Run the production build and diff checks, verify the home scene, a morphing project state, the index interaction, supporting routes, and browser console health, then push the approved rebuild to the connected GitHub main branch.
